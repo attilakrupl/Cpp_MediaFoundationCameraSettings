@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IncludePath>..\..\resources;C:\SDL2\SDL2_mixer\include;C:\SDL2\SDL2\include;C:\SDL2\SDL2_image\include;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "C:\SDL2\SDL2\lib\$(PlatformTarget)\SDL2.dll" "$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)\SDL2.dll"
+copy /Y "C:\SDL2\SDL2_image\lib\$(PlatformTarget)\SDL2_image.dll" "$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)\SDL2_image.dll"
+copy /Y "C:\SDL2\SDL2_image\lib\$(PlatformTarget)\libpng16-16.dll" "$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)\libpng16-16.dll"
+copy /Y "C:\SDL2\SDL2_image\lib\$(PlatformTarget)\libjpeg-9.dll" "$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)\libjpeg-9.dll"
+copy /Y "C:\SDL2\SDL2_image\lib\$(PlatformTarget)\libtiff-5.dll" "$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)\libtiff-5.dll"
+copy /Y "C:\SDL2\SDL2_image\lib\$(PlatformTarget)\libwebp-7.dll" "$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)\libwebp-7.dll"
+copy /Y "C:\SDL2\SDL2_image\lib\$(PlatformTarget)\zlib1.dll" "$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)\zlib1.dll"</Command>
+      <Message>Copy  SDL2, SDL2_image dlls  to "$(SolutionDir)..\bin\$(Configuration)\$(PlatformTarget)\$(ProjectName)"</Message>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <ClCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>
