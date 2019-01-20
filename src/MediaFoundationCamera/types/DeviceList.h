@@ -14,17 +14,21 @@
 
 class DeviceList
 {
-private:
-    UINT32      mDeviceCount;
-    IMFActivate **m_ppDevices;
-
 public:
     DeviceList();
     ~DeviceList();
 
+    UINT32 Count() const;
+    bool   UpdateDeviceList();
+    void   PrintDeviceProperties( GUID aGuidKey );
+
+
+private:
+    UINT32      mDeviceCount;
+    IMFActivate **m_ppDevices;
+
     void    Clear();
-    UINT32  Count() const;
     HRESULT EnumerateDevices();
-    HRESULT GetDevice( const UINT32 index, IMFActivate **ppActivate );
-    HRESULT GetDeviceName( const UINT32 index, WCHAR **ppszName );
+    HRESULT GetDevice( const UINT32 aIndex, IMFActivate** aPpActivate );
+    std::string GetDevicePropertyString( const UINT32 aIndex, GUID aGuidKey );
 };

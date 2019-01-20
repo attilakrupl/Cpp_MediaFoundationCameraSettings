@@ -1,4 +1,5 @@
 #include "DeviceList.h"
+#include <comdef.h>
 
 namespace
 {
@@ -11,7 +12,14 @@ namespace
         }
     }
 
-    HRESULT CopyAttribute( IMFAttributes *pSrc, IMFAttributes *pDest, const GUID& key );
+    std::string convertWideChar( WCHAR* aWideChar )
+    {
+        _bstr_t     b( aWideChar );
+        const char* c    = b;
+        std::string lRet = std::string( c );
+
+        return lRet;
+    }
 }
 
 DeviceList::DeviceList() : m_ppDevices( nullptr )
@@ -35,8 +43,7 @@ void DeviceList::Clear()
         SafeRelease( &m_ppDevices[ i ] );
     }
     CoTaskMemFree( m_ppDevices );
-    m_ppDevices = nullptr;
-
+    m_ppDevices  = nullptr;
     mDeviceCount = 0;
 }
 
@@ -47,7 +54,8 @@ HRESULT DeviceList::EnumerateDevices()
 
     this->Clear();
 
-    lQueryResult = MFCreateAttributes( &pAttributes, 1 );
+    lQueryResult = MFCreateAttributes( &pAttributes
+                                     , 1 );
 
     if( SUCCEEDED( lQueryResult ) )
     {
@@ -82,17 +90,58 @@ HRESULT DeviceList::GetDevice( UINT32 index, IMFActivate **ppActivate )
     return S_OK;
 }
 
-HRESULT DeviceList::GetDeviceName( UINT32 index, WCHAR **ppszName )
+std::string DeviceList::GetDevicePropertyString( const UINT32 aIndex, GUID aGuidKey )
 {
-    if( index >= Count() )
+    std::string lResult{};
+    if( aIndex >= Count() )
     {
-        return E_INVALIDARG;
+        return lResult;
     }
 
-    HRESULT lQueryResult = S_OK;
-    lQueryResult = m_ppDevices[ index ]->GetAllocatedString( MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME
-                                                           , ppszName
-                                                           , nullptr );
+    HRESULT lQueryResult         = S_OK;
+    WCHAR*  lPropertyValue       = nullptr;
+    UINT32  lPropertyValueLength = 0;
+    auto    lDevice              = m_ppDevices[ aIndex ];
+            lQueryResult         = lDevice->GetAllocatedString( aGuidKey // alpahbetical order of MF attributes: https://docs.microsoft.com/en-us/windows/desktop/medfound/alphabetical-list-of-media-foundation-attributes
+                                                              , &lPropertyValue
+                                                              , &lPropertyValueLength );
 
-    return lQueryResult;
+    if( !SUCCEEDED( lQueryResult ) )
+    {
+        return lResult;
+    }
+
+    lResult = convertWideChar( lPropertyValue );
+    CoTaskMemFree( lPropertyValue );
+    lPropertyValue = nullptr;
+    
+    return lResult;
+}
+
+void DeviceList::PrintDeviceProperties( GUID aGuidKey )
+{
+    for( UINT32 i = 0; i < Count(); ++i )
+    {
+        std::string lDeviceName = GetDevicePropertyString( i , aGuidKey );
+        if( !lDeviceName.empty() )
+        {
+            std::cout << lDeviceName.c_str() << std::endl;
+        }
+    }
+}
+
+bool DeviceList::UpdateDeviceList()
+{
+    HRESULT lQueryResult = S_OK;
+    Clear();
+
+    lQueryResult = EnumerateDevices();
+    if( FAILED( lQueryResult ) )
+    {
+        return false;
+    }
+
+    std::cout << "Number of devices found: " << Count() << std::endl;
+
+    return true;
 }

@@ -1,48 +1,18 @@
-#include <iostream>
 #include "types/DeviceList.h"
-#include <comdef.h>
 
-std::string convertWideChar( WCHAR* aWideChar )
-{
-    _bstr_t b( aWideChar );
-    const char* c = b;
-    std::string lRet = std::string( c );
-    return lRet;
-}
-
-HRESULT UpdateDeviceList()
-{
-    HRESULT    lQueryResult  = S_OK;
-    WCHAR*     lFriendlyName = nullptr;
-    DeviceList lDeviceList;
-    
-    lDeviceList.Clear();
-
-    lQueryResult = lDeviceList.EnumerateDevices();
-    if( FAILED( lQueryResult ) ) 
-    {
-        return lQueryResult;
-    }
-
-    std::cout << "Number of devices found: " << lDeviceList.Count() << std::endl;
-    for( UINT32 iDevice = 0; iDevice < lDeviceList.Count(); iDevice++ )
-    {
-        lQueryResult = lDeviceList.GetDeviceName( iDevice, &lFriendlyName );
-        if( FAILED( lQueryResult ) )
-        {
-            return lQueryResult;
-        }
-        std::cout << convertWideChar( lFriendlyName ).c_str() << std::endl;
-
-        CoTaskMemFree( lFriendlyName );
-        lFriendlyName = nullptr;
-    }
-    return lQueryResult;
-}
+/* MF_DEVSOURCE_ATTRIBUTEs represented as string, which can be used with the current solution
+ *      MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME 
+ *      MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK
+ *      MF_AUDIO_RENDERER_ATTRIBUTE_ENDPOINT_ID
+ */
 
 int main()
 {
-    UpdateDeviceList();
+    DeviceList lDeviceList;
+    if( lDeviceList.UpdateDeviceList() )
+    {
+        lDeviceList.PrintDeviceProperties( MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME );
+    }
     while( 1 );
     return 0;
 }

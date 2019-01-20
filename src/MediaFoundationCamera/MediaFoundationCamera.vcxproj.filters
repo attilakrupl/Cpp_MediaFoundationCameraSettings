@@ -10,9 +10,15 @@
     <ClCompile Include="types\DeviceList.cpp">
       <Filter>types</Filter>
     </ClCompile>
+    <ClCompile Include="types\MediaDevice.cpp">
+      <Filter>types</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="types\DeviceList.h">
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="types\MediaDevice.h">
       <Filter>types</Filter>
     </ClInclude>
   </ItemGroup>
