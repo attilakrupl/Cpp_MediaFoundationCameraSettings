@@ -58,26 +58,22 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\props\Sdl_General.props" />
-    <Import Project="..\..\props\Sdl2_x86.props" />
+    <Import Project="..\..\props\General.props" />
     <Import Project="..\..\props\MediaFoundationGeneral.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\props\Sdl_General.props" />
-    <Import Project="..\..\props\Sdl2_x86.props" />
+    <Import Project="..\..\props\General.props" />
     <Import Project="..\..\props\MediaFoundationGeneral.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\props\Sdl_General.props" />
-    <Import Project="..\..\props\Sdl2_x64.props" />
+    <Import Project="..\..\props\General.props" />
     <Import Project="..\..\props\MediaFoundationGeneral.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\props\Sdl_General.props" />
-    <Import Project="..\..\props\Sdl2_x64.props" />
+    <Import Project="..\..\props\General.props" />
     <Import Project="..\..\props\MediaFoundationGeneral.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
