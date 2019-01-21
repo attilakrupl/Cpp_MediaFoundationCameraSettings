@@ -1,5 +1,8 @@
 #include "DeviceList.h"
 #include <comdef.h>
+#include <atlcomcli.h>
+#include <Strmif.h>
+#include <Dshow.h>
 
 namespace
 {
@@ -22,7 +25,7 @@ namespace
     }
 }
 
-DeviceList::DeviceList() : m_ppDevices( nullptr )
+DeviceList::DeviceList() : mppDevices( nullptr )
                          , mDeviceCount( 0 )
 {}
 
@@ -40,10 +43,10 @@ void DeviceList::Clear()
 {
     for( UINT32 i = 0; i < mDeviceCount; i++ )
     {
-        SafeRelease( &m_ppDevices[ i ] );
+        SafeRelease( &mppDevices[ i ] );
     }
-    CoTaskMemFree( m_ppDevices );
-    m_ppDevices  = nullptr;
+    CoTaskMemFree( mppDevices );
+    mppDevices  = nullptr;
     mDeviceCount = 0;
 }
 
@@ -67,7 +70,7 @@ HRESULT DeviceList::EnumerateDevices()
     if( SUCCEEDED( lQueryResult ) )
     {
         lQueryResult = MFEnumDeviceSources( pAttributes
-                                          , &m_ppDevices
+                                          , &mppDevices
                                           , &mDeviceCount );
         std::cout << "Devices available:" << mDeviceCount << std::endl;
     }
@@ -84,7 +87,7 @@ HRESULT DeviceList::GetDevice( UINT32 index, IMFActivate **ppActivate )
         return E_INVALIDARG;
     }
 
-    *ppActivate = m_ppDevices[ index ];
+    *ppActivate = mppDevices[ index ];
     ( *ppActivate )->AddRef();
 
     return S_OK;
@@ -98,13 +101,34 @@ std::string DeviceList::GetDevicePropertyString( const UINT32 aIndex, GUID aGuid
         return lResult;
     }
 
-    HRESULT lQueryResult         = S_OK;
-    WCHAR*  lPropertyValue       = nullptr;
-    UINT32  lPropertyValueLength = 0;
-    auto    lDevice              = m_ppDevices[ aIndex ];
-            lQueryResult         = lDevice->GetAllocatedString( aGuidKey // alpahbetical order of MF attributes: https://docs.microsoft.com/en-us/windows/desktop/medfound/alphabetical-list-of-media-foundation-attributes
-                                                              , &lPropertyValue
-                                                              , &lPropertyValueLength );
+    HRESULT          lQueryResult         = S_OK;
+    WCHAR*           lPropertyValue       = nullptr;
+    UINT32           lPropertyValueLength = 0;
+    IMFMediaSource** lppMediaSource       = nullptr;
+    IMFActivate*     lpDevice             = mppDevices[ aIndex ];
+
+    lpDevice->ActivateObject( IID_PPV_ARGS( lppMediaSource ) ); /*! initializes the IMFMediaSource pointer */
+
+    CComQIPtr<IAMCameraControl> lpCameraControl( *lppMediaSource ); /*! initializes the IAMCameraControl pointer */
+    CComQIPtr<IAMVideoProcAmp>  lpVideo( *lppMediaSource ); /*! initializes the IAMVideoProcAmp pointer */
+
+    /* Now we have access to the functions of both IAMCameraControl and IAMVideoProcAmp interfaces of the Captore Device */
+
+    /* Camera Control properties: https://docs.microsoft.com/en-us/previous-versions/ms779747%28v%3dvs.85%29 
+     * Camera Control flags:      https://docs.microsoft.com/en-us/previous-versions/ms779746%28v%3dvs.85%29 
+     */
+    
+    /* VideoProcAmp properties : https://docs.microsoft.com/en-us/previous-versions/ms787924%28v%3dvs.85%29
+     * VideoProcAmp flags:       https://docs.microsoft.com/en-us/previous-versions/ms787923%28v%3dvs.85%29
+     */
+
+    long lValueVideoProcAmp_Contrast;
+    long lFlagAuto = 0x0001;
+    HRESULT lQueryResult = lpCameraControl->Get( VideoProcAmp_Contrast, &lValueVideoProcAmp_Contrast, &lFlagAuto );
+
+    lQueryResult         = lpDevice->GetAllocatedString( aGuidKey // alpahbetical order of MF attributes: https://docs.microsoft.com/en-us/windows/desktop/medfound/alphabetical-list-of-media-foundation-attributes
+                                                       , &lPropertyValue
+                                                       , &lPropertyValueLength );
 
     if( !SUCCEEDED( lQueryResult ) )
     {

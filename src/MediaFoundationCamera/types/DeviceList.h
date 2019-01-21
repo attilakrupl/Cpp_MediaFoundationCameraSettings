@@ -25,7 +25,7 @@ public:
 
 private:
     UINT32      mDeviceCount;
-    IMFActivate **m_ppDevices;
+    IMFActivate **mppDevices;
 
     void    Clear();
     HRESULT EnumerateDevices();
