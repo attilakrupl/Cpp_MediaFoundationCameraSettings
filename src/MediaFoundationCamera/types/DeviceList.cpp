@@ -104,23 +104,24 @@ std::string DeviceList::GetDevicePropertyString( const UINT32 aIndex, GUID aGuid
     HRESULT          lQueryResult         = S_OK;
     WCHAR*           lPropertyValue       = nullptr;
     UINT32           lPropertyValueLength = 0;
-    IAMCameraControl* lIAMCameraControl;
+    IAMVideoProcAmp* lIAMVideoProcAmp;
     IMFActivate*     lpDevice             = mppDevices[ aIndex ];
 
-    // The parameter's type provided to the IID_PPV_ARGS has to match the desired interfaces type
-    lQueryResult = lpDevice->ActivateObject( IID_PPV_ARGS( &lIAMCameraControl ) ); /*! initializes the IMFMediaSource pointer */
-    if( lQueryResult != S_OK )
+    // The parameter's type provided to the IID_PPV_ARGS has to match the desired interfaces typen
+    CoInitialize( nullptr );
+    lQueryResult = lpDevice->ActivateObject( IID_PPV_ARGS( &lIAMVideoProcAmp ) ); /*! initializes the IMFMediaSource pointer */
+    if( lQueryResult == S_OK )
     {
-        CComQIPtr<IAMCameraControl> lpCameraControl( lIAMCameraControl ); /*! initializes the IAMCameraControl pointer */
+        CComQIPtr<IAMVideoProcAmp> lpCameraControl( lIAMVideoProcAmp ); /*! initializes the IAMCameraControl pointer */
         long lFlag = 0x0001;
         long lPanValue, lTiltValue, lRollValue, lZoomValue, lExposure, lIrisValue, lFocusValue;
-        lpCameraControl->Get( CameraControl_Pan, &lPanValue, &lFlag );
-        lpCameraControl->Get( CameraControl_Tilt, &lTiltValue, &lFlag );
-        lpCameraControl->Get( CameraControl_Roll, &lRollValue, &lFlag );
-        lpCameraControl->Get( CameraControl_Zoom, &lZoomValue, &lFlag );
-        lpCameraControl->Get( CameraControl_Exposure, &lExposure, &lFlag );
-        lpCameraControl->Get( CameraControl_Iris, &lIrisValue, &lFlag );
-        lpCameraControl->Get( CameraControl_Focus, &lFocusValue, &lFlag );
+        lpCameraControl->Get( VideoProcAmp_Brightness, &lPanValue, &lFlag );
+        lpCameraControl->Get( VideoProcAmp_Contrast, &lTiltValue, &lFlag );
+        lpCameraControl->Get( VideoProcAmp_Hue, &lRollValue, &lFlag );
+        lpCameraControl->Get( VideoProcAmp_Saturation, &lZoomValue, &lFlag );
+        lpCameraControl->Get( VideoProcAmp_Sharpness, &lExposure, &lFlag );
+        lpCameraControl->Get( VideoProcAmp_Gamma, &lIrisValue, &lFlag );
+        lpCameraControl->Get( VideoProcAmp_ColorEnable, &lFocusValue, &lFlag );
     }
 
 
