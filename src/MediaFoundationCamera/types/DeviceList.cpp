@@ -104,13 +104,28 @@ std::string DeviceList::GetDevicePropertyString( const UINT32 aIndex, GUID aGuid
     HRESULT          lQueryResult         = S_OK;
     WCHAR*           lPropertyValue       = nullptr;
     UINT32           lPropertyValueLength = 0;
-    IMFMediaSource** lppMediaSource       = nullptr;
+    IAMCameraControl* lIAMCameraControl;
     IMFActivate*     lpDevice             = mppDevices[ aIndex ];
 
-    lpDevice->ActivateObject( IID_PPV_ARGS( lppMediaSource ) ); /*! initializes the IMFMediaSource pointer */
+    // The parameter's type provided to the IID_PPV_ARGS has to match the desired interfaces type
+    lQueryResult = lpDevice->ActivateObject( IID_PPV_ARGS( &lIAMCameraControl ) ); /*! initializes the IMFMediaSource pointer */
+    if( lQueryResult != S_OK )
+    {
+        CComQIPtr<IAMCameraControl> lpCameraControl( lIAMCameraControl ); /*! initializes the IAMCameraControl pointer */
+        long lFlag = 0x0001;
+        long lPanValue, lTiltValue, lRollValue, lZoomValue, lExposure, lIrisValue, lFocusValue;
+        lpCameraControl->Get( CameraControl_Pan, &lPanValue, &lFlag );
+        lpCameraControl->Get( CameraControl_Tilt, &lTiltValue, &lFlag );
+        lpCameraControl->Get( CameraControl_Roll, &lRollValue, &lFlag );
+        lpCameraControl->Get( CameraControl_Zoom, &lZoomValue, &lFlag );
+        lpCameraControl->Get( CameraControl_Exposure, &lExposure, &lFlag );
+        lpCameraControl->Get( CameraControl_Iris, &lIrisValue, &lFlag );
+        lpCameraControl->Get( CameraControl_Focus, &lFocusValue, &lFlag );
+    }
 
-    CComQIPtr<IAMCameraControl> lpCameraControl( *lppMediaSource ); /*! initializes the IAMCameraControl pointer */
-    CComQIPtr<IAMVideoProcAmp>  lpVideo( *lppMediaSource ); /*! initializes the IAMVideoProcAmp pointer */
+
+
+    //CComQIPtr<IAMVideoProcAmp>  lpVideo( *lppMediaSource ); /*! initializes the IAMVideoProcAmp pointer */
 
     /* Now we have access to the functions of both IAMCameraControl and IAMVideoProcAmp interfaces of the Captore Device */
 
@@ -121,10 +136,6 @@ std::string DeviceList::GetDevicePropertyString( const UINT32 aIndex, GUID aGuid
     /* VideoProcAmp properties : https://docs.microsoft.com/en-us/previous-versions/ms787924%28v%3dvs.85%29
      * VideoProcAmp flags:       https://docs.microsoft.com/en-us/previous-versions/ms787923%28v%3dvs.85%29
      */
-
-    long lValueVideoProcAmp_Contrast;
-    long lFlagAuto = 0x0001;
-    HRESULT lQueryResult = lpCameraControl->Get( VideoProcAmp_Contrast, &lValueVideoProcAmp_Contrast, &lFlagAuto );
 
     lQueryResult         = lpDevice->GetAllocatedString( aGuidKey // alpahbetical order of MF attributes: https://docs.microsoft.com/en-us/windows/desktop/medfound/alphabetical-list-of-media-foundation-attributes
                                                        , &lPropertyValue
