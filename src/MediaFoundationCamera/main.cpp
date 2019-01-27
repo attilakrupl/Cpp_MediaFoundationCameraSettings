@@ -11,8 +11,7 @@ int main()
     DeviceList lDeviceList;
     if( lDeviceList.UpdateDeviceList() )
     {
-        lDeviceList.PrintDeviceProperties( MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME );
-        lDeviceList.PrintDeviceProperties( MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK );
+        lDeviceList.PrintDeviceProperties();
     }
     while( 1 );
     return 0;

@@ -20,7 +20,8 @@ public:
 
     UINT32 Count() const;
     bool   UpdateDeviceList();
-    void   PrintDeviceProperties( GUID aGuidKey );
+    void   PrintDeviceProperties();
+    void   PrintCameraControlValues( const UINT32 aIndex );
 
 
 private:
