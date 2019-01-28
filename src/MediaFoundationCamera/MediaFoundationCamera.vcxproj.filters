@@ -21,5 +21,8 @@
     <ClInclude Include="types\MediaDevice.h">
       <Filter>types</Filter>
     </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>types</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
