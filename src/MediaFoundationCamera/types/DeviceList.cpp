@@ -36,51 +36,72 @@ namespace
         std::cout << aName.c_str() << " - Min: " << aMin << ", Max: " << aMax << ", Default: " << aDef << ", Step: " << aStep << ", Flags: " << aFlags <<  std::endl;
     }
 
+    void LogFailure( const std::string& aName )
+    {
+        std::cout << "Reading " << aName.c_str() << " attribute has failed!" << std::endl;
+    }
 
-    void ReadVideoProcAmpAttribute( CComQIPtr<IAMVideoProcAmp> aHandle
-                                  , const tagVideoProcAmpProperty aProperty
-                                  , const std::string& aPropertyName )
+    template<typename T, typename P>
+    void FlipSettings( T aHandle, P aProperty, long aMin, long aMax, long aDef, long aFlags )
     {
         HRESULT lQueryResult = S_OK;
+        std::cout << "Changing property: "<< std::endl;
 
-        long lMin, lMax, lStep, lDef, lFlags;
-        lQueryResult = aHandle->GetRange( aProperty, &lMin, &lMax, &lStep, &lDef, &lFlags );
-        if( lQueryResult == S_OK )
+        Sleep( 1000 );
+        lQueryResult = aHandle->Set( aProperty
+                                   , aMin
+                                   , aFlags );
+        if ( lQueryResult == S_OK )
         {
-            LogRange( aPropertyName, lMin, lMax, lDef, lStep, lFlags );
+            std::cout << "Setting to min succeeded" << std::endl;
         }
-
-        long    lValue;
-                lQueryResult = aHandle->Get( aProperty
-                                           , &lValue
-                                           , &lFlags );
-        if( lQueryResult == S_OK )
+        Sleep( 1000 );
+        lQueryResult = aHandle->Set( aProperty
+                                   , aMax
+                                   , aFlags );
+        if ( lQueryResult == S_OK )
         {
-            LogValue( aPropertyName, lValue );
+            std::cout << "Setting to max succeeded" << std::endl;
+        }
+        Sleep( 1000 );
+        lQueryResult = aHandle->Set( aProperty
+                                   , aDef
+                                   , aFlags );
+        if ( lQueryResult == S_OK )
+        {
+            std::cout << "Setting to default succeeded" << std::endl;
         }
     }
 
-    void ReadCamraControlAttribute( CComQIPtr<IAMCameraControl> aHandle
-                                  , const tagCameraControlProperty aProperty
-                                  , const std::string& aPropertyName )
+    template<typename T, typename P>
+    void ReadAttribute(       T            aHandle
+                      , const P            aProperty
+                      , const std::string& aPropertyName )
     {
         HRESULT lQueryResult = S_OK;
-    
+
         long lMin, lMax, lStep, lDef, lFlags;
         lQueryResult = aHandle->GetRange( aProperty, &lMin, &lMax, &lStep, &lDef, &lFlags );
-        if ( lQueryResult == S_OK )
+        if( lQueryResult == S_OK )
         {
             LogRange( aPropertyName, lMin, lMax, lDef, lStep, lFlags );
+            long    lValue;
+                    lQueryResult = aHandle->Get( aProperty
+                                               , &lValue
+                                               , &lFlags );
+            if( lQueryResult == S_OK )
+            {
+                LogValue( aPropertyName, lValue );
+            }
+            
+            FlipSettings<T, P>(aHandle, aProperty, lMin, lMax, lDef, lFlags);
         }
-    
-        long    lValue;
-        lQueryResult = aHandle->Get( aProperty
-                                     , &lValue
-                                     , &lFlags );
-        if ( lQueryResult == S_OK )
+        else
         {
-            LogValue( aPropertyName, lValue );
+            LogFailure( aPropertyName );
         }
+
+        std::cout << std::endl;
     }
 }
 
@@ -231,13 +252,16 @@ void DeviceList::PrintCameraControlValues( const UINT32 aIndex )
     {
         CComQIPtr<IAMVideoProcAmp> lpVideoProcAmp( lIMFMediaSource ); /*! initializes the IAMVideoProcAmp pointer */
 
-        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Brightness,  "VideoProcAmp_Brightness" );
-        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Contrast,    "VideoProcAmp_Contrast" );
-        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Hue,         "VideoProcAmp_Hue" );
-        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Saturation,  "VideoProcAmp_Saturation" );
-        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Sharpness,   "VideoProcAmp_Sharpness" );
-        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Gamma,       "VideoProcAmp_Gamma" );
-        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_ColorEnable, "VideoProcAmp_ColorEnable" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_BacklightCompensation , "VideoProcAmp_BacklightCompensation" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Brightness,             "VideoProcAmp_Brightness" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Contrast,               "VideoProcAmp_Contrast" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_ColorEnable,            "VideoProcAmp_ColorEnable" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Gain,                   "VideoProcAmp_Gain" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Gamma,                  "VideoProcAmp_Gamma" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Hue,                    "VideoProcAmp_Hue" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Saturation,             "VideoProcAmp_Saturation" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Sharpness,              "VideoProcAmp_Sharpness" );
+        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_WhiteBalance,           "VideoProcAmp_WhiteBalance" );
         
         std::cout << "---------------------------------\n" << std::endl;
     }
@@ -246,13 +270,13 @@ void DeviceList::PrintCameraControlValues( const UINT32 aIndex )
     {
         CComQIPtr<IAMCameraControl> lpCameraControl( lIMFMediaSource ); /*! initializes the IAMVideoProcAmp pointer */
 
-        ReadCamraControlAttribute( lpCameraControl, CameraControl_Pan, "CameraControl_Pan");
-        ReadCamraControlAttribute( lpCameraControl, CameraControl_Tilt, "CameraControl_Tilt");
-        ReadCamraControlAttribute( lpCameraControl, CameraControl_Roll, "CameraControl_Roll");
-        ReadCamraControlAttribute( lpCameraControl, CameraControl_Zoom, "CameraControl_Zoom");
-        ReadCamraControlAttribute( lpCameraControl, CameraControl_Exposure, "CameraControl_Exposure");
-        ReadCamraControlAttribute( lpCameraControl, CameraControl_Iris, "CameraControl_Iris");
-        ReadCamraControlAttribute( lpCameraControl, CameraControl_Focus, "CameraControl_Focus");
+        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Exposure, "CameraControl_Exposure");
+        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Focus, "CameraControl_Focus");
+        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Iris, "CameraControl_Iris");
+        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Pan, "CameraControl_Pan");
+        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Roll, "CameraControl_Roll");
+        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Tilt, "CameraControl_Tilt");
+        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Zoom, "CameraControl_Zoom");
 
         std::cout << "---------------------------------\n" << std::endl;
     }
