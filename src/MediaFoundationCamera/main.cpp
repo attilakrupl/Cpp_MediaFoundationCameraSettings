@@ -11,8 +11,12 @@ int main()
     DeviceList lDeviceList;
     if( lDeviceList.UpdateDeviceList() )
     {
-        lDeviceList.PrintDeviceProperties();
+        while( 1 )
+        {
+            system( "CLS" );
+            lDeviceList.PrintDeviceProperties();
+            Sleep(1000);
+        };
     }
-    while( 1 );
     return 0;
 }

@@ -37,7 +37,7 @@ namespace
     }
 
 
-    void ReadCameraControlAtribute( CComQIPtr<IAMVideoProcAmp> aHandle
+    void ReadVideoProcAmpAttribute( CComQIPtr<IAMVideoProcAmp> aHandle
                                   , const tagVideoProcAmpProperty aProperty
                                   , const std::string& aPropertyName )
     {
@@ -51,11 +51,33 @@ namespace
         }
 
         long    lValue;
-        long    lFlag = 0x0002;
                 lQueryResult = aHandle->Get( aProperty
                                            , &lValue
-                                           , &lFlag );
+                                           , &lFlags );
         if( lQueryResult == S_OK )
+        {
+            LogValue( aPropertyName, lValue );
+        }
+    }
+
+    void ReadCamraControlAttribute( CComQIPtr<IAMCameraControl> aHandle
+                                  , const tagCameraControlProperty aProperty
+                                  , const std::string& aPropertyName )
+    {
+        HRESULT lQueryResult = S_OK;
+    
+        long lMin, lMax, lStep, lDef, lFlags;
+        lQueryResult = aHandle->GetRange( aProperty, &lMin, &lMax, &lStep, &lDef, &lFlags );
+        if ( lQueryResult == S_OK )
+        {
+            LogRange( aPropertyName, lMin, lMax, lDef, lStep, lFlags );
+        }
+    
+        long    lValue;
+        lQueryResult = aHandle->Get( aProperty
+                                     , &lValue
+                                     , &lFlags );
+        if ( lQueryResult == S_OK )
         {
             LogValue( aPropertyName, lValue );
         }
@@ -195,31 +217,46 @@ bool DeviceList::UpdateDeviceList()
 
 void DeviceList::PrintCameraControlValues( const UINT32 aIndex )
 {
-    HRESULT          lQueryResult = S_OK;
-    WCHAR*           lPropertyValue = nullptr;
-    UINT32           lPropertyValueLength = 0;
-    IAMVideoProcAmp* lIAMVideoProcAmp;
-    IMFActivate*     lpDevice = mppDevices[ aIndex ];
+    HRESULT         lQueryResult         = S_OK;
+    WCHAR*          lPropertyValue       = nullptr;
+    UINT32          lPropertyValueLength = 0;
+    IMFActivate*    lpDevice             = mppDevices[ aIndex ];
+    IMFMediaSource* lIMFMediaSource;
 
     // The parameter's type provided to the IID_PPV_ARGS has to match the desired interfaces typen
     CoInitialize( nullptr );
-    lQueryResult = lpDevice->ActivateObject( IID_PPV_ARGS( &lIAMVideoProcAmp ) ); /*! initializes the IMFMediaSource pointer */
+    lQueryResult = lpDevice->ActivateObject( IID_PPV_ARGS( &lIMFMediaSource ) ); /*! initializes the IMFMediaSource pointer */
 
     if( lQueryResult == S_OK )
     {
-        CComQIPtr<IAMVideoProcAmp> lpCameraControl( lIAMVideoProcAmp ); /*! initializes the IAMVideoProcAmp pointer */
-        
+        CComQIPtr<IAMVideoProcAmp> lpVideoProcAmp( lIMFMediaSource ); /*! initializes the IAMVideoProcAmp pointer */
 
-        ReadCameraControlAtribute( lpCameraControl, VideoProcAmp_Brightness, "VideoProcAmp_Brightness" );
-        ReadCameraControlAtribute( lpCameraControl, VideoProcAmp_Contrast, "VideoProcAmp_Contrast" );
-        ReadCameraControlAtribute( lpCameraControl, VideoProcAmp_Hue, "VideoProcAmp_Hue" );
-        ReadCameraControlAtribute( lpCameraControl, VideoProcAmp_Saturation, "VideoProcAmp_Saturation" );
-        ReadCameraControlAtribute( lpCameraControl, VideoProcAmp_Sharpness, "VideoProcAmp_Sharpness" );
-        ReadCameraControlAtribute( lpCameraControl, VideoProcAmp_Gamma, "VideoProcAmp_Gamma" );
-        ReadCameraControlAtribute( lpCameraControl, VideoProcAmp_ColorEnable, "VideoProcAmp_ColorEnable" );
+        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Brightness,  "VideoProcAmp_Brightness" );
+        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Contrast,    "VideoProcAmp_Contrast" );
+        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Hue,         "VideoProcAmp_Hue" );
+        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Saturation,  "VideoProcAmp_Saturation" );
+        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Sharpness,   "VideoProcAmp_Sharpness" );
+        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_Gamma,       "VideoProcAmp_Gamma" );
+        ReadVideoProcAmpAttribute( lpVideoProcAmp, VideoProcAmp_ColorEnable, "VideoProcAmp_ColorEnable" );
         
         std::cout << "---------------------------------\n" << std::endl;
     }
+
+    if ( lQueryResult == S_OK )
+    {
+        CComQIPtr<IAMCameraControl> lpCameraControl( lIMFMediaSource ); /*! initializes the IAMVideoProcAmp pointer */
+
+        ReadCamraControlAttribute( lpCameraControl, CameraControl_Pan, "CameraControl_Pan");
+        ReadCamraControlAttribute( lpCameraControl, CameraControl_Tilt, "CameraControl_Tilt");
+        ReadCamraControlAttribute( lpCameraControl, CameraControl_Roll, "CameraControl_Roll");
+        ReadCamraControlAttribute( lpCameraControl, CameraControl_Zoom, "CameraControl_Zoom");
+        ReadCamraControlAttribute( lpCameraControl, CameraControl_Exposure, "CameraControl_Exposure");
+        ReadCamraControlAttribute( lpCameraControl, CameraControl_Iris, "CameraControl_Iris");
+        ReadCamraControlAttribute( lpCameraControl, CameraControl_Focus, "CameraControl_Focus");
+
+        std::cout << "---------------------------------\n" << std::endl;
+    }
+
     lQueryResult = lpDevice->DetachObject();
 
 
