@@ -4,6 +4,8 @@
 #include <Strmif.h>
 #include <Dshow.h>
 
+const int SLEEPTIME = 1000;
+
 namespace
 {
     template <class T> void SafeRelease( T **ppT )
@@ -47,7 +49,7 @@ namespace
         HRESULT lQueryResult = S_OK;
         std::cout << "Changing property: "<< std::endl;
 
-        Sleep( 1000 );
+        Sleep( SLEEPTIME );
         lQueryResult = aHandle->Set( aProperty
                                    , aMin
                                    , aFlags );
@@ -55,7 +57,7 @@ namespace
         {
             std::cout << "Setting to min succeeded" << std::endl;
         }
-        Sleep( 1000 );
+        Sleep( SLEEPTIME );
         lQueryResult = aHandle->Set( aProperty
                                    , aMax
                                    , aFlags );
@@ -63,7 +65,7 @@ namespace
         {
             std::cout << "Setting to max succeeded" << std::endl;
         }
-        Sleep( 1000 );
+        Sleep( SLEEPTIME );
         lQueryResult = aHandle->Set( aProperty
                                    , aDef
                                    , aFlags );
@@ -252,17 +254,24 @@ void DeviceList::PrintCameraControlValues( const UINT32 aIndex )
     {
         CComQIPtr<IAMVideoProcAmp> lpVideoProcAmp( lIMFMediaSource ); /*! initializes the IAMVideoProcAmp pointer */
 
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_BacklightCompensation , "VideoProcAmp_BacklightCompensation" );
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Brightness,             "VideoProcAmp_Brightness" );
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Contrast,               "VideoProcAmp_Contrast" );
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_ColorEnable,            "VideoProcAmp_ColorEnable" );
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Gain,                   "VideoProcAmp_Gain" );
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Gamma,                  "VideoProcAmp_Gamma" );
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Hue,                    "VideoProcAmp_Hue" );
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Saturation,             "VideoProcAmp_Saturation" );
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Sharpness,              "VideoProcAmp_Sharpness" );
-        ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_WhiteBalance,           "VideoProcAmp_WhiteBalance" );
-        
+        if ( lpVideoProcAmp != nullptr )
+        {
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_BacklightCompensation , "VideoProcAmp_BacklightCompensation" );
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Brightness,             "VideoProcAmp_Brightness" );
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Contrast,               "VideoProcAmp_Contrast" );
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_ColorEnable,            "VideoProcAmp_ColorEnable" );
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Gain,                   "VideoProcAmp_Gain" );
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Gamma,                  "VideoProcAmp_Gamma" );
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Hue,                    "VideoProcAmp_Hue" );
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Saturation,             "VideoProcAmp_Saturation" );
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_Sharpness,              "VideoProcAmp_Sharpness" );
+            ReadAttribute<CComQIPtr<IAMVideoProcAmp>, tagVideoProcAmpProperty>( lpVideoProcAmp, VideoProcAmp_WhiteBalance,           "VideoProcAmp_WhiteBalance" );
+        }
+        else
+        {
+            std::cout << "Interface for camera not available\n" << std::endl;
+        }
+
         std::cout << "---------------------------------\n" << std::endl;
     }
 
@@ -270,18 +279,28 @@ void DeviceList::PrintCameraControlValues( const UINT32 aIndex )
     {
         CComQIPtr<IAMCameraControl> lpCameraControl( lIMFMediaSource ); /*! initializes the IAMVideoProcAmp pointer */
 
-        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Exposure, "CameraControl_Exposure");
-        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Focus, "CameraControl_Focus");
-        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Iris, "CameraControl_Iris");
-        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Pan, "CameraControl_Pan");
-        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Roll, "CameraControl_Roll");
-        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Tilt, "CameraControl_Tilt");
-        ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Zoom, "CameraControl_Zoom");
+        if ( lpCameraControl != nullptr )
+        {
+            ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Exposure, "CameraControl_Exposure");
+            ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Focus, "CameraControl_Focus");
+            ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Iris, "CameraControl_Iris");
+            ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Pan, "CameraControl_Pan");
+            ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Roll, "CameraControl_Roll");
+            ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Tilt, "CameraControl_Tilt");
+            ReadAttribute<CComQIPtr<IAMCameraControl>, tagCameraControlProperty>( lpCameraControl, CameraControl_Zoom, "CameraControl_Zoom");
+        }
+        else
+        {
+            std::cout << "Interface for camera not available\n" << std::endl;
+        }
 
         std::cout << "---------------------------------\n" << std::endl;
     }
 
     lQueryResult = lpDevice->DetachObject();
+    lIMFMediaSource->Shutdown();
+    lIMFMediaSource->Release();
+    lIMFMediaSource = NULL;
 
 
 /* Now we have access to the functions of both IAMCameraControl and IAMVideoProcAmp interfaces of the Captore Device */
