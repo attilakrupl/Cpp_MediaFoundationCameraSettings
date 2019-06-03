@@ -1,8 +1,11 @@
-#include "DeviceList.h"
-#include <comdef.h>
-#include <atlcomcli.h>
-#include <Strmif.h>
-#include <Dshow.h>
+/*!
+ * \file   devicelist.cpp
+ * \author Attila Krüpl
+ * \date   2019/06/03
+ * \info   www.krupl.com
+ */
+
+#include "stdafx.h"
 
 const int SLEEPTIME = 1000;
 
@@ -35,7 +38,7 @@ namespace
     template<typename T>
     void LogRange( const std::string& aName, const T& aMin, const T& aMax, const T& aDef, const T& aStep, const T& aFlags )
     {
-        std::cout << aName.c_str() << " - Min: " << aMin << ", Max: " << aMax << ", Default: " << aDef << ", Step: " << aStep << ", Flags: " << aFlags <<  std::endl;
+        std::cout << aName.c_str() << " - Min: " << aMin << ", Max: " << aMax << ", Default: " << aDef << ", Step: " << aStep << ", Flags: " << aFlags << " ";
     }
 
     void LogFailure( const std::string& aName )
@@ -95,8 +98,6 @@ namespace
             {
                 LogValue( aPropertyName, lValue );
             }
-            
-            FlipSettings<T, P>(aHandle, aProperty, lMin, lMax, lDef, lFlags);
         }
         else
         {
@@ -139,9 +140,7 @@ HRESULT DeviceList::EnumerateDevices()
 
     this->Clear();
 
-    lQueryResult = MFCreateAttributes( &pAttributes
-                                     , 1 );
-
+    lQueryResult = MFCreateAttributes( &pAttributes, 1 );
     if( SUCCEEDED( lQueryResult ) )
     {
         lQueryResult = pAttributes->SetGUID( MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE

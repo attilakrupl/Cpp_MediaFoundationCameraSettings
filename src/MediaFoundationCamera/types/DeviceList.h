@@ -1,16 +1,11 @@
-#pragma once
-#include <new>
-#include <windows.h>
-#include <mfapi.h>
-#include <mfidl.h>
-#include <mfreadwrite.h>
-#include <Wmcodecdsp.h>
-#include <assert.h>
-#include <Dbt.h>
-#include <shlwapi.h>
-#include <mfplay.h>
+/*!
+ * \file   devicelist.h
+ * \author Attila Krüpl
+ * \date   2019/06/03
+ * \info   www.krupl.com
+ */
 
-#include <iostream>
+#pragma once
 
 class DeviceList
 {

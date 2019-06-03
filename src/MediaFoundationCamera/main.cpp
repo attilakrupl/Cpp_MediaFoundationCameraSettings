@@ -1,4 +1,11 @@
-#include "types/DeviceList.h"
+/*!
+ * \file   main.cpp
+ * \author Attila Krüpl
+ * \date   2019/06/03
+ * \info   www.krupl.com
+ */
+
+#include "stdafx.h"
 
 /* MF_DEVSOURCE_ATTRIBUTEs represented as string, which can be used with the current solution
  *      MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME 

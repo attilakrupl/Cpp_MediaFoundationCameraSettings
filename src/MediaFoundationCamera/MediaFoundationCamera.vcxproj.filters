@@ -7,21 +7,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="types\DeviceList.cpp">
-      <Filter>types</Filter>
-    </ClCompile>
-    <ClCompile Include="types\MediaDevice.cpp">
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="types\devicelist.cpp">
       <Filter>types</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="types\DeviceList.h">
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="mediafoundationcamera.h" />
+    <ClInclude Include="types\devicelist.h">
       <Filter>types</Filter>
     </ClInclude>
-    <ClInclude Include="types\MediaDevice.h">
-      <Filter>types</Filter>
-    </ClInclude>
-    <ClInclude Include="Helper.h">
+    <ClInclude Include="types\helper.h">
       <Filter>types</Filter>
     </ClInclude>
   </ItemGroup>
